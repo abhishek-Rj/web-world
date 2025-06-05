@@ -1,0 +1,86 @@
+import { useState } from 'react';
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { pressStart2P, geistMono, spaceMono } from "@/fonts";
+
+export default function SignUp() {
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  return (
+    <>
+    <div className={`min-h-screen flex items-center bg-black justify-center relative overflow-hidden ${geistMono.className}`}>
+      <div className="flex flex-col md:flex-row gap-8 p-4 max-w-5xl w-full items-stretch h-[500px] relative z-10">
+
+        <Card className="backdrop-blur-sm bg-white/10 border-white/20 shadow-xl w-full max-w-md rounded-2xl p-6 text-white z-10 flex flex-col justify-center">
+          <h2 className={`text-xl text-center mb-4 ${pressStart2P.className} tracking-widest`}>JOIN THE METAVERSE</h2>
+          <CardContent className="flex flex-col gap-4">
+            <Input
+              name="name"
+              placeholder="Your Name"
+              value={form.name}
+              onChange={handleChange}
+              className="bg-white/10 border-white/30 placeholder-white/60 text-white"
+            />
+            <Input
+              name="email"
+              type="email"
+              placeholder="Email"
+              value={form.email}
+              onChange={handleChange}
+              className="bg-white/10 border-white/30 placeholder-white/60 text-white"
+            />
+            <Input
+              name="password"
+              type="password"
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange}
+              className="bg-white/10 border-white/30 placeholder-white/60 text-white"
+            />
+            <Input
+              name="confirmPassword"
+              type="password"
+              placeholder="Confirm Password"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              className="bg-white/10 border-white/30 placeholder-white/60 text-white"
+            />
+            <Button className={`bg-purple-600 hover:bg-purple-700 transition-all font-semibold mt-2 ${pressStart2P.className}`}>
+              Sign Up
+            </Button>
+            <p className={`text-sm text-center text-white/70 mt-2 ${spaceMono.className}`}>
+              Already have an account? <a href="/login" className={`text-blue-400 hover:underline ${spaceMono.className}`}>Log in</a>
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="relative overflow-hidden backdrop-blur-lg bg-black/10 border-white/20 shadow-xl w-full max-w-md rounded-2xl p-6 text-white z-10 flex items-center justify-center">
+          <img
+            src="/signin/cover.png"
+            alt="Background"
+            className="absolute inset-0 w-full h-full object-cover opacity-60"
+          />
+          <div className="relative z-10 text-center">
+            <h1 className={`text-3xl lg:text-4xl font-bold text-white drop-shadow-lg ${pressStart2P.className}`}>
+              Explore. Connect. Evolve.
+            </h1>
+            <p className={`mt-4 text-lg text-white/80 ${geistMono.className} font-medium`}>
+              Dive into a world beyond reality.
+            </p>
+          </div>
+        </Card>
+      </div>
+    </div>
+    </>
+  );
+}
