@@ -3,7 +3,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { pressStart2P, geistMono, spaceMono, saira } from "@/fonts";
-import StarryNightSky from "@/components/effects/shooting-stars";
+import { ShootingStars } from "@/components/ui/shooting-star";
+import { StarsBackground } from "@/components/ui/stars-background";
 
 export default function SignUp() {
   const [form, setForm] = useState({
@@ -24,7 +25,25 @@ export default function SignUp() {
       <div
         className={`min-h-screen flex items-center bg-black justify-center relative overflow-hidden ${geistMono.className}`}
       >
-        <StarryNightSky />
+        {/* Rotating background container */}
+        <div
+          className="absolute inset-0 animate-spin"
+          style={{ animationDuration: "200s" }}
+        >
+          <StarsBackground />
+        </div>
+
+        {/* Additional rotating gradient overlay */}
+        <div
+          className="absolute inset-0 animate-spin opacity-20"
+          style={{
+            animationDuration: "300s",
+            background:
+              "radial-gradient(circle at 50% 50%, rgba(147, 51, 234, 0.1) 0%, transparent 50%)",
+          }}
+        />
+
+        <ShootingStars />
         <div className="flex flex-col md:flex-row gap-8 p-4 max-w-5xl w-full items-stretch h-auto relative z-10">
           <Card className="backdrop-blur-sm bg-white/10 border-white/20 shadow-xl w-full max-w-md rounded-2xl p-6 text-white z-10 flex flex-col justify-center">
             <h2
