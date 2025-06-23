@@ -1,6 +1,31 @@
 import CredentialProvider from "next-auth/providers/credentials";
+import { NextAuthOptions } from "next-auth";
+import { JWT } from "next-auth/jwt";
 
-export const authOptions = {
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    }
+  }
+
+  interface User {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+  }
+}
+
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialProvider({
       name: "Credentials",
@@ -23,12 +48,12 @@ export const authOptions = {
 
         try {
           const findUser = await fetch(`${process.env.BASE_URL}/user/login`, {
-            method: 'POST', 
+            method: 'POST',
             headers: {
               "Content-Type": "application/json"
-            }, 
+            },
             body: JSON.stringify({
-              email: email, 
+              email: email,
               password: password
             })
           })
@@ -54,19 +79,24 @@ export const authOptions = {
     signOut: "/",
   },
   session: {
-
+    strategy: "jwt",
   },
   callbacks: {
-    async signIn({
-      username,
-      email,
-      password,
-    }: {
-      username: string;
-      email: string;
-      password: string;
-    }) {
-      return null;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id;
+        session.user.name = token.name;
+        session.user.email = token.email;
+      }
+      return session;
     },
   },
 };

@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { pressStart2P, geistMono, spaceMono, saira } from "@/fonts";
 import { ShootingStars } from "@/components/ui/shooting-star";
 import { StarsBackground } from "@/components/ui/stars-background";
-import {signIn} from "next-auth/react"
+import { signIn } from "next-auth/react"
 
 export default function Login() {
   const [form, setForm] = useState({
@@ -16,14 +16,30 @@ export default function Login() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  // Email validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setError(""); // Clear error when user types
   };
 
-  const handleSubmit = async () => { 
-    if (!form.email || !form.password) {
-      setError("Please fill in all fields");
+  const validateEmail = (email: string) => {
+    if (!email) return "Email is required";
+    if (!emailRegex.test(email)) return "Please enter a valid email address";
+    return null;
+  };
+
+  const handleSubmit = async () => {
+    // Email validation
+    const emailError = validateEmail(form.email);
+    if (emailError) {
+      setError(emailError);
+      return;
+    }
+
+    if (!form.password) {
+      setError("Password is required");
       return;
     }
 
@@ -96,7 +112,7 @@ export default function Login() {
                 className="bg-white/10 border-white/30 placeholder-white/60 text-white"
                 disabled={isLoading}
               />
-              
+
               <div className="relative">
                 <Input
                   name="password"
