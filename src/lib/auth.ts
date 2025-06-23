@@ -1,5 +1,4 @@
 import CredentialProvider from "next-auth/providers/credentials";
-import bcrypt from "bcrypt";
 
 export const authOptions = {
   providers: [
@@ -23,22 +22,24 @@ export const authOptions = {
         const { email, password } = credentials;
 
         try {
-          const ifUserExists = await prisma.user.findUnique({
-            where: {
-              email,
-            },
-          });
-          const comparingPassword = await bcrypt.compare(
-            password,
-            ifUserExists?.password || ""
-          );
-          if (!ifUserExists || !comparingPassword) {
-            return null;
+          const findUser = await fetch(`${process.env.BASE_URL}/user/login`, {
+            method: 'POST', 
+            headers: {
+              "Content-Type": "application/json"
+            }, 
+            body: JSON.stringify({
+              email: email, 
+              password: password
+            })
+          })
+          const response = await findUser.json()
+          if (!findUser.ok) {
+            return null
           }
           return {
-            id: ifUserExists.id,
-            name: ifUserExists.name,
-            email: ifUserExists.email,
+            id: response.id,
+            name: response.name,
+            email: response.email,
           };
         } catch (err) {
           console.log("Error in finding user: ", err);
@@ -51,6 +52,9 @@ export const authOptions = {
     signIn: "/login",
     error: "/login",
     signOut: "/",
+  },
+  session: {
+
   },
   callbacks: {
     async signIn({
