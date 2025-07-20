@@ -1,27 +1,18 @@
 import CredentialProvider from "next-auth/providers/credentials";
 import { NextAuthOptions } from "next-auth";
-import { JWT } from "next-auth/jwt";
 
 declare module "next-auth" {
   interface Session {
     user: {
-      id: string;
-      name?: string | null;
-      email?: string | null;
-      image?: string | null;
+      id: string,
+      name: string,
+      email: string
     }
   }
-
   interface User {
-    id: string;
-    name?: string | null;
-    email?: string | null;
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    id: string;
+    id: string,
+    name: string,
+    email: string
   }
 }
 
@@ -48,23 +39,23 @@ export const authOptions: NextAuthOptions = {
 
         try {
           const findUser = await fetch(`${process.env.BASE_URL}/user/login`, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
               email: email,
-              password: password
-            })
-          })
-          const response = await findUser.json()
-          if (!findUser.ok) {
-            return null
+              password: password,
+            }),
+          });
+          const response = await findUser.json();
+          if ((response.message !== "Login successful" || !response.user)) {
+            return null;
           }
           return {
-            id: response.id,
-            name: response.name,
-            email: response.email,
+            id: response.user.id,
+            name: response.user.name,
+            email: response.user.email,
           };
         } catch (err) {
           console.log("Error in finding user: ", err);
@@ -83,20 +74,25 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
+      console.log("🔥 jwt callback - user:", user);
+      console.log("🔥 jwt callback - token BEFORE:", token);
+
       if (user) {
-        token.id = user.id;
-        token.name = user.name;
-        token.email = user.email;
+          token.id = user.id;
+          token.name = user.name;
+          token.email = user.email;
       }
+      console.log("🔥 jwt callback - token AFTER:", token);
+
       return token;
     },
-    async session({ session, token }) {
-      if (token && session.user) {
-        session.user.id = token.id;
-        session.user.name = token.name;
-        session.user.email = token.email;
-      }
+    async session({session, token}) {
+      console.log("🔥 session callback - token BEFORE:", session);
+      console.log("🔥 session.id as string")
+      session.user.name = token.name as string;
+      session.user.email = token.email as string;
+      console.log("🔥 session callback - token AFTER:", session);
       return session;
-    },
+    }
   },
 };

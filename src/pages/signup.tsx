@@ -3,8 +3,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { pressStart2P, geistMono, spaceMono, saira } from "@/fonts";
-import { ShootingStars } from "@/components/ui/shooting-star";
-import { StarsBackground } from "@/components/ui/stars-background";
+import GridDistortion from "@/components/ui/distortion";
+import { toast } from "react-toastify";
 
 export default function SignUp() {
   const [form, setForm] = useState({
@@ -33,6 +33,7 @@ export default function SignUp() {
     return null;
   };
 
+  //Handle SUbmit
   const handleSubmit = async () => {
     // Form validation
     if (!form.name) {
@@ -60,7 +61,7 @@ export default function SignUp() {
     if (form.password !== form.confirmPassword) {
       setError("Passwords do not match");
       return;
-    }
+    }   
 
     if (form.password.length < 6) {
       setError("Password must be at least 6 characters long");
@@ -72,7 +73,7 @@ export default function SignUp() {
 
     try {
       console.log(process.env.BASE_URL);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/user/register`, {
+      const response = await fetch(`${process.env.BASE_URL}/user/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,6 +86,7 @@ export default function SignUp() {
       });
       const data = await response.json();
       if (response.ok) {
+        toast.success("Account created successfully");
         window.location.href = "/login";
       } else {
         setError(data.message || "Registration failed");
@@ -101,25 +103,18 @@ export default function SignUp() {
       <div
         className={`min-h-screen flex items-center bg-black justify-center relative overflow-hidden ${geistMono.className}`}
       >
-        {/* Rotating background container */}
-        <div
-          className="absolute inset-0 animate-spin"
-          style={{ animationDuration: "200s" }}
-        >
-          <StarsBackground />
+        {/* Grid Distortion Component - positioned absolutely on top */}
+        <div className="absolute inset-0 z-0">
+          <GridDistortion
+            imageSrc="background.png"
+            grid={25}
+            mouse={0.12}
+            strength={0.2}
+            relaxation={0.88}
+            className="w-full h-full"
+          />
         </div>
 
-        {/* Additional rotating gradient overlay */}
-        <div
-          className="absolute inset-0 animate-spin opacity-20"
-          style={{
-            animationDuration: "300s",
-            background:
-              "radial-gradient(circle at 50% 50%, rgba(147, 51, 234, 0.1) 0%, transparent 50%)",
-          }}
-        />
-
-        <ShootingStars />
         <div className="flex flex-col md:flex-row gap-8 p-4 max-w-5xl w-full items-stretch h-auto relative z-10">
           <Card className="backdrop-blur-sm bg-white/10 border-white/20 shadow-xl w-full max-w-md rounded-2xl p-6 text-white z-10 flex flex-col justify-center">
             <h2

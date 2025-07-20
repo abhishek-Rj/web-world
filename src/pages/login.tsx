@@ -2,10 +2,9 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { pressStart2P, geistMono, spaceMono, saira } from "@/fonts";
-import { ShootingStars } from "@/components/ui/shooting-star";
-import { StarsBackground } from "@/components/ui/stars-background";
-import { signIn } from "next-auth/react"
+import { pressStart2P, geistMono, spaceMono } from "@/fonts";
+import { signIn } from "next-auth/react";
+import GridDistortion from "@/components/ui/distortion";
 
 export default function Login() {
   const [form, setForm] = useState({
@@ -16,22 +15,23 @@ export default function Login() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // Email validation regex
+  //Email validation regex
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setError(""); // Clear error when user types
+    setError("");
   };
 
+  //Email validation
   const validateEmail = (email: string) => {
     if (!email) return "Email is required";
     if (!emailRegex.test(email)) return "Please enter a valid email address";
     return null;
   };
 
+  //Handle submit
   const handleSubmit = async () => {
-    // Email validation
     const emailError = validateEmail(form.email);
     if (emailError) {
       setError(emailError);
@@ -50,7 +50,7 @@ export default function Login() {
       const res = await signIn("credentials", {
         redirect: false,
         email: form.email,
-        password: form.password
+        password: form.password,
       });
 
       if (res?.error) {
@@ -70,25 +70,19 @@ export default function Login() {
       <div
         className={`min-h-screen flex items-center bg-black justify-center relative overflow-hidden ${geistMono.className}`}
       >
-        {/* Rotating background container */}
-        <div
-          className="absolute inset-0 animate-spin"
-          style={{ animationDuration: "200s" }}
-        >
-          <StarsBackground />
+        {/* Grid Distortion Component - positioned absolutely on top */}
+        <div className="absolute inset-0 z-0">
+          <GridDistortion
+            imageSrc="background.png"
+            grid={25}
+            mouse={0.12}
+            strength={0.2}
+            relaxation={0.88}
+            className="w-full h-full"
+          />
         </div>
 
-        {/* Additional rotating gradient overlay */}
-        <div
-          className="absolute inset-0 animate-spin opacity-20"
-          style={{
-            animationDuration: "300s",
-            background:
-              "radial-gradient(circle at 50% 50%, rgba(147, 51, 234, 0.1) 0%, transparent 50%)",
-          }}
-        />
-
-        <ShootingStars />
+        {/* Main content - positioned above the distortion */}
         <div className="flex flex-col md:flex-row gap-8 p-4 max-w-5xl w-full items-stretch h-auto relative z-10">
           <Card className="backdrop-blur-sm bg-white/10 border-white/20 shadow-xl w-full max-w-md rounded-2xl p-6 text-white z-10 flex flex-col justify-center">
             <h2
@@ -193,7 +187,10 @@ export default function Login() {
               <div
                 className={`flex space-y-2 flex-col ${pressStart2P.className}`}
               >
-                <Button className="bg-white font-bold transition-all" disabled={isLoading}>
+                <Button
+                  className="bg-white font-bold transition-all"
+                  disabled={isLoading}
+                >
                   <span className="text-blue-600">G</span>
                   <span className="text-red-600">o</span>
                   <span className="text-yellow-500">o</span>
@@ -201,7 +198,10 @@ export default function Login() {
                   <span className="text-green-600">l</span>
                   <span className="text-red-600">e</span>
                 </Button>
-                <Button className="bg-[#1877F2] text-white font-bold transition-all" disabled={isLoading}>
+                <Button
+                  className="bg-[#1877F2] text-white font-bold transition-all"
+                  disabled={isLoading}
+                >
                   <span>F</span>
                   <span>a</span>
                   <span>c</span>
