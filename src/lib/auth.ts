@@ -4,19 +4,22 @@ import { NextAuthOptions } from "next-auth";
 declare module "next-auth" {
   interface Session {
     user: {
-      id: string,
-      name: string,
-      email: string
-    }
+      id: string;
+      name: string;
+      email: string;
+    };
+    token: string;
+    whole_token: any;
   }
   interface User {
-    id: string,
-    name: string,
-    email: string
+    id: string;
+    name: string;
+    email: string;
   }
 }
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialProvider({
       name: "Credentials",
@@ -49,7 +52,7 @@ export const authOptions: NextAuthOptions = {
             }),
           });
           const response = await findUser.json();
-          if ((response.message !== "Login successful" || !response.user)) {
+          if (response.message !== "Login successful" || !response.user) {
             return null;
           }
           return {
@@ -78,21 +81,23 @@ export const authOptions: NextAuthOptions = {
       console.log("🔥 jwt callback - token BEFORE:", token);
 
       if (user) {
-          token.id = user.id;
-          token.name = user.name;
-          token.email = user.email;
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
       }
       console.log("🔥 jwt callback - token AFTER:", token);
 
       return token;
     },
-    async session({session, token}) {
+    async session({ session, token }) {
       console.log("🔥 session callback - token BEFORE:", session);
-      console.log("🔥 session.id as string")
+      console.log("🔥 session.id as string");
       session.user.name = token.name as string;
       session.user.email = token.email as string;
+      session.token = token.id as string;
+      session.whole_token = token;
       console.log("🔥 session callback - token AFTER:", session);
       return session;
-    }
+    },
   },
 };

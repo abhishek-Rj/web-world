@@ -56,7 +56,8 @@ export default function Login() {
       if (res?.error) {
         setError("Invalid email or password");
       } else if (res?.ok) {
-        window.location.href = "/";
+        console.log(res);
+        window.location.href = "/selectAvatar";
       }
     } catch (err) {
       setError("An error occurred. Please try again.");

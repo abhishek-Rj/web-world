@@ -19,7 +19,8 @@ export default function Home() {
   return (
     <div>
       <h1 className={`${geistMono.className} text-black`}>
-        Hello {session?.user?.name || session?.user?.email}
+        Hello {session?.user?.name || session?.user?.email},{" "}
+        {JSON.stringify(session)}
       </h1>
     </div>
   );
