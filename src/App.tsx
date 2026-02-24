@@ -1,21 +1,12 @@
-import { useEffect } from "react";
-import gameConfig from "./utils/gameConfig";
-import Phaser from "phaser";
-import "./App.css";
+import { Routes, Route } from "react-router-dom";
+import World from "@/pages/World";
+import Join from "@/pages/Join";
 
-function App() {
-	useEffect(() => {
-		const game = new Phaser.Game(gameConfig);
-
-		return () => {
-			game.destroy(true);
-		};
-	}, []);
-	return (
-		<div className="flex flex-col items-center justify-center">
-			<div id="game-container" className="text-center"></div>
-		</div>
-	);
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/world/:worldId" element={<World />} />
+      <Route path="/join" element={<Join />} />
+    </Routes>
+  );
 }
-
-export default App;
