@@ -38,10 +38,10 @@ export default function Join() {
   };
 
   return (
-    <main className="font-pixel relative min-h-screen overflow-hidden bg-[#0a0612] text-[#f7f0ff]">
+    <main className="font-departure relative min-h-screen overflow-hidden bg-[#0a0612] text-[#f7f0ff]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,#ff00ff40_0%,transparent_50%),radial-gradient(ellipse_at_0%_100%,#00ffff30_0%,transparent_40%),radial-gradient(ellipse_at_100%_100%,#ff6b0040_0%,transparent_40%)] animate-[flicker_3s_ease-in-out_infinite]" />
 
-      <div className="pointer-events-none absolute inset-0 opacity-20 [background:linear-gradient(transparent_2px,#000_2px),linear-gradient(90deg,transparent_2px,#000_2px)] [background-size:4px_4px]" />
+      <div className="pointer-events-none absolute inset-0 opacity-20 [background:linear-gradient(transparent_2px,#000_2px),linear-gradient(90deg,transparent_2px,#000_2px)] [bg-size:4px_4px]" />
 
       <div className="pointer-events-none absolute inset-0 animate-pulse opacity-10 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,#ff00ff10_2px,#ff00ff10_4px)]" />
 
@@ -84,7 +84,7 @@ export default function Join() {
 
             <div className="bg-[#1a0a2e] p-6 pt-8">
               <h1
-                className="mb-2 text-center text-3xl font-black uppercase tracking-widest text-[#fff]"
+                className="mb-2 text-center text-3xl font-black uppercase tracking-widest text-[#ffffff]"
                 style={{ textShadow: "3px 3px 0 #ff00ff, -1px -1px 0 #00ffff" }}
               >
                 Select Mode

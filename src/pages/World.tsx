@@ -9,6 +9,13 @@ export default function World() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!socket.connected) {
+      socket.connect();
+      socket.emit("joinRoom", { roomCode: worldId });
+      socket.on("joinedRoom", () => {
+        console.log(`Connected to room ${worldId}`);
+      });
+    }
     const game = new Phaser.Game(gameConfig);
     game.scene.start("scene_1", { socket });
 
