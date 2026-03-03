@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 export default function Signup() {
@@ -8,21 +9,30 @@ export default function Signup() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (!username.trim()) {
-      setError("CHOOSE A USERNAME");
+    if (username.length < 3 || username.length > 20) {
+      setError("USERNAME MUST BE 3-20 CHARACTERS");
+      return;
+    }
+    if (/\s/.test(username)) {
+      setError("USERNAME CANNOT CONTAIN SPACES");
+      return;
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+      setError("USERNAME CAN ONLY CONTAIN LETTERS, NUMBERS, _ AND -");
       return;
     }
     if (!email.trim() || !email.includes("@")) {
       setError("ENTER A VALID EMAIL");
       return;
     }
-    if (password.length < 6) {
-      setError("PASSWORD MUST BE 6+ CHARACTERS");
+    if (password.length < 8) {
+      setError("PASSWORD MUST BE 8+ CHARACTERS");
       return;
     }
     if (password !== confirmPassword) {
@@ -31,10 +41,28 @@ export default function Signup() {
     }
 
     setIsLoading(true);
-    // Simulate signup — replace with real auth later
-    setTimeout(() => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/signup`, { method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, email, password }),
+      });
+      if (!response.ok) {
+        setError("Signup failed");
+        return;
+      }
+      const data = await response.json();
+      if (data.accessToken) {
+        localStorage.setItem("accessToken", data.accessToken);
+        navigate("/character");
+      }
+    } catch (error) {
+      console.error(error);
+      setError(error as string);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }   
   };
 
   return (
@@ -130,7 +158,7 @@ export default function Signup() {
                       setError("");
                     }}
                     placeholder="CHOOSE A HANDLE"
-                    className="w-full border-2 border-[#00ffff80] bg-[#050a10] px-4 py-3 text-sm font-bold uppercase tracking-widest text-[#00ffff] placeholder-[#00ffff30] outline-none transition-all duration-200 focus:border-[#00ffff] focus:shadow-[0_0_20px_#00ffff40,inset_0_0_20px_#00ffff10]"
+                    className="w-full border-2 border-[#00ffff80] bg-[#050a10] px-4 py-3 text-sm font-bold tracking-widest text-[#00ffff] placeholder-[#00ffff30] outline-none transition-all duration-200 focus:border-[#00ffff] focus:shadow-[0_0_20px_#00ffff40,inset_0_0_20px_#00ffff10]"
                     style={{
                       textShadow: "0 0 8px #00ffff60",
                       boxShadow: "inset 0 0 15px #00ffff08",
@@ -154,7 +182,7 @@ export default function Signup() {
                       setError("");
                     }}
                     placeholder="PLAYER@ARENA.COM"
-                    className="w-full border-2 border-[#ffff0080] bg-[#0a0a05] px-4 py-3 text-sm font-bold uppercase tracking-widest text-[#ffff00] placeholder-[#ffff0030] outline-none transition-all duration-200 focus:border-[#ffff00] focus:shadow-[0_0_20px_#ffff0040,inset_0_0_20px_#ffff0010]"
+                    className="w-full border-2 border-[#ffff0080] bg-[#0a0a05] px-4 py-3 text-sm font-bold tracking-widest text-[#ffff00] placeholder-[#ffff0030] outline-none transition-all duration-200 focus:border-[#ffff00] focus:shadow-[0_0_20px_#ffff0040,inset_0_0_20px_#ffff0010]"
                     style={{
                       textShadow: "0 0 8px #ffff0060",
                       boxShadow: "inset 0 0 15px #ffff0008",

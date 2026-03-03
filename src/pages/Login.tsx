@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 export default function Login() {
@@ -6,8 +7,9 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -19,13 +21,30 @@ export default function Login() {
       setError("ENTER YOUR PASSWORD");
       return;
     }
-
     setIsLoading(true);
-    // Simulate login — replace with real auth later
-    setTimeout(() => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
+      const data = await response.json();
+      if (data.accessToken) {
+        localStorage.setItem("accessToken", data.accessToken);
+        navigate("/character");
+      }
+    } catch (error) {
+      console.error(error);
+      setError("Login failed");
+    } finally {
       setIsLoading(false);
-      // navigate to /join on success
-    }, 1000);
+    }
   };
 
   return (
@@ -121,7 +140,7 @@ export default function Login() {
                       setError("");
                     }}
                     placeholder="ENTER USERNAME"
-                    className="w-full border-2 border-[#00ffff80] bg-[#050a10] px-4 py-3 text-sm font-bold uppercase tracking-widest text-[#00ffff] placeholder-[#00ffff30] outline-none transition-all duration-200 focus:border-[#00ffff] focus:shadow-[0_0_20px_#00ffff40,inset_0_0_20px_#00ffff10]"
+                    className="w-full border-2 border-[#00ffff80] bg-[#050a10] px-4 py-3 text-sm font-bold tracking-widest text-[#00ffff] placeholder-[#00ffff30] outline-none transition-all duration-200 focus:border-[#00ffff] focus:shadow-[0_0_20px_#00ffff40,inset_0_0_20px_#00ffff10]"
                     style={{
                       textShadow: "0 0 8px #00ffff60",
                       boxShadow: "inset 0 0 15px #00ffff08",

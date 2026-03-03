@@ -1,9 +1,10 @@
 import express from "express";
-import { router } from "./src/routes";
+import { joinRouter } from "./src/routes/network";
 import { Server } from "socket.io";
-import { gameRoom, playerDetailSchema } from "../src/utils/interface/schema";
+import { gameRoom } from "../src/utils/interface/schema";
 import cors, { CorsOptions } from "cors";
 import socket from "./src/websocket/socket";
+import { authRouter } from "./src/routes/auth";
 
 const app = express();
 const server = app.listen(4000, () => {
@@ -24,11 +25,11 @@ const corsConfig: CorsOptions = {
     }
   },
   methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
-  allowedHeaders: "*",
   credentials: true,
 };
 
 app.use(cors(corsConfig));
+app.use(express.json())
 
 const io = new Server(server, {
   transports: ["websocket"],
@@ -46,6 +47,7 @@ const io = new Server(server, {
 export let playerRoom = new Map<string, string>();
 export let rooms = new Map<string, gameRoom>();
 
-app.use("/network", router);
+app.use("/auth", authRouter);
+app.use("/network", joinRouter);
 
 io.on("connection", socket);
