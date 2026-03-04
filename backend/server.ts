@@ -5,6 +5,7 @@ import { gameRoom } from "../src/utils/interface/schema";
 import cors, { CorsOptions } from "cors";
 import socket from "./src/websocket/socket";
 import { authRouter } from "./src/routes/auth";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const server = app.listen(4000, () => {
@@ -28,6 +29,7 @@ const corsConfig: CorsOptions = {
   credentials: true,
 };
 
+app.use(cookieParser())
 app.use(cors(corsConfig));
 app.use(express.json())
 

@@ -50,12 +50,14 @@ export async function Signup(req: Request, res: Response) {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
+      //TODO: for production use secure: true
+      secure: false,
       sameSite: "strict",
-      path: "/refresh",
+      path: "/auth/refresh",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
     res.json({accessToken});
+    return;
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Failed to create user" });

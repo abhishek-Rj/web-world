@@ -15,7 +15,7 @@ export function AuthProvider({children} :{children: React.ReactNode}) {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BASE_URL}/refresh`, {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/refresh`, {
           method: "POST",
           credentials: "include",
         })

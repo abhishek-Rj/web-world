@@ -38,12 +38,14 @@ export async function Login(req: Request, res: Response): Promise<void> {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
+      //TODO: for production use secure: true
+      secure: false,
       sameSite: "strict",
-      path: "/refresh",
+      path: "/auth/refresh",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
     res.status(200).json({accessToken});
+    return;
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Failed to login" });
