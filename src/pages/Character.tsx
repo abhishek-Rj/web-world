@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 interface CharacterOption {
   id: string;
@@ -11,8 +12,8 @@ interface CharacterOption {
 
 const characters: CharacterOption[] = [
   {
-    id: "cyber-striker",
-    name: "Cyber Striker",
+    id: "1",
+    name: "Nomad",
     image: "/first_sprite.png",
     color: "#00ffff",
     glow: "#00ffff",
@@ -22,6 +23,24 @@ const characters: CharacterOption[] = [
 export default function Character() {
   const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState<string>(characters[0].id);
+  const auth = useAuth();
+
+  const handleContinue = async () => {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/upload/character`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${auth.accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        AvatarId: selectedId,
+      }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      navigate("/join");
+    }
+  }
 
   const selected = characters.find((c) => c.id === selectedId)!;
 
@@ -218,7 +237,7 @@ export default function Character() {
               {/* Continue button */}
               <button
                 type="button"
-                onClick={() => navigate("/join")}
+                onClick={handleContinue}
                 className="group relative w-full rounded-none border-2 border-[#00ffff] bg-[#0a1520] py-4 text-center font-black uppercase tracking-widest text-white transition-all duration-100 hover:bg-[#00ffff20]"
                 style={{
                   boxShadow:
