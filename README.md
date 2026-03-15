@@ -1,6 +1,6 @@
 # Web World (Multiplayer Web Arcade)
 
-Welcome to **Web World**, a real-time multiplayer 2D arcade ecosystem! This project provides an interactive virtual world where users can select custom characters, host or join distinct private game rooms using 6-digit codes, and explore a shared top-down map together in real time. 
+Welcome to **Web World**, a real-time multiplayer 2D arcade ecosystem! This project provides an interactive virtual world where users can select custom characters, host or join distinct private game rooms using 6-digit codes, and explore a shared top-down map together in real time.
 
 ## Key Features
 

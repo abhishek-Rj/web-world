@@ -6,21 +6,23 @@ import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import Character from "@/pages/Character";
 import RouterProtection from "@/components/protection/RouterProtection";
+import CharacterUpload from "./pages/admin/characterUpload";
 
 export default function App() {
   return (
-      <Routes>
-        {/* public routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+    <Routes>
+      {/* public routes */}
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
 
-        {/* protected routes */}
-        <Route element={<RouterProtection />}>
-          <Route path="/join" element={<Join />} />
-          <Route path="/world/:worldId" element={<World />} />
-          <Route path="/character" element={<Character />} />
-        </Route>
-      </Routes>
+      {/* protected routes */}
+      <Route element={<RouterProtection />}>
+        <Route path="/admin/character-upload" element={<CharacterUpload />} />
+        <Route path="/join" element={<Join />} />
+        <Route path="/world/:worldId" element={<World />} />
+        <Route path="/character" element={<Character />} />
+      </Route>
+    </Routes>
   );
 }

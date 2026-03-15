@@ -1,7 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyAccessToken } from "../lib/token";
+import { verifyAccessToken } from "../../lib/token";
+import { User } from "../types/userInterface";
 
-export function verifyToken(req: Request, res: Response, next: NextFunction): void {
+export function verifyToken(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     res.status(401).json({ message: "No token provided" });
@@ -9,7 +14,7 @@ export function verifyToken(req: Request, res: Response, next: NextFunction): vo
   }
   const token = authHeader.split(" ")[1];
   try {
-    const decodedToken = verifyAccessToken(token) as any;
+    const decodedToken = verifyAccessToken(token) as User;
     if (!decodedToken) {
       res.status(401).json({ message: "Invalid token" });
       return;

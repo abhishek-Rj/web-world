@@ -6,6 +6,8 @@ import cors, { CorsOptions } from "cors";
 import socket from "./src/websocket/socket";
 import { authRouter } from "./src/routes/auth";
 import cookieParser from "cookie-parser";
+import { s3Router } from "./src/aws/s3";
+import multer from "multer";
 
 const app = express();
 const server = app.listen(4000, () => {
@@ -29,9 +31,9 @@ const corsConfig: CorsOptions = {
   credentials: true,
 };
 
-app.use(cookieParser())
+app.use(cookieParser());
 app.use(cors(corsConfig));
-app.use(express.json())
+app.use(express.json());
 
 const io = new Server(server, {
   transports: ["websocket"],
@@ -51,5 +53,6 @@ export let rooms = new Map<string, gameRoom>();
 
 app.use("/auth", authRouter);
 app.use("/network", joinRouter);
+app.use("/s3", s3Router);
 
 io.on("connection", socket);

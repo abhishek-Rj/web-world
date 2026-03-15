@@ -18,5 +18,13 @@ model User {
   username  String  @unique
   email     String  @unique
   password  String
-  character String?
+  character Character? @relation(fields: [characterId], references: [id])
+  characterId String?
+}
+
+model Character {
+  id String @id @default(uuid())
+  name String @unique
+  image String @unique
+  user User[]
 }
