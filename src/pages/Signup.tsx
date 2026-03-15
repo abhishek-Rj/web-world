@@ -1,3 +1,4 @@
+import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -10,6 +11,7 @@ export default function Signup() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { setUser, setAccessToken } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,19 +44,24 @@ export default function Signup() {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/signup`, { method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/auth/signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, email, password }),
         },
-        body: JSON.stringify({ username, email, password }),
-      });
+      );
       if (!response.ok) {
         setError("Signup failed");
         return;
       }
       const data = await response.json();
       if (data.accessToken) {
-        localStorage.setItem("accessToken", data.accessToken);
+        setAccessToken(data.accessToken);
+        setUser(data.user);
         navigate("/character");
       }
     } catch (error) {
@@ -62,7 +69,7 @@ export default function Signup() {
       setError(error as string);
     } finally {
       setIsLoading(false);
-    }   
+    }
   };
 
   return (
@@ -266,12 +273,16 @@ export default function Signup() {
                     {isLoading ? (
                       <>
                         INITIALIZING
-                        <span className="inline-block animate-pulse text-xl">◆</span>
+                        <span className="inline-block animate-pulse text-xl">
+                          ◆
+                        </span>
                       </>
                     ) : (
                       <>
                         CREATE ACCOUNT
-                        <span className="inline-block animate-pulse text-xl">★</span>
+                        <span className="inline-block animate-pulse text-xl">
+                          ★
+                        </span>
                       </>
                     )}
                   </span>
@@ -312,11 +323,17 @@ export default function Signup() {
                 />
                 <div
                   className="h-2 w-2 animate-pulse bg-[#00ffff]"
-                  style={{ boxShadow: "0 0 8px #00ffff", animationDelay: "0.3s" }}
+                  style={{
+                    boxShadow: "0 0 8px #00ffff",
+                    animationDelay: "0.3s",
+                  }}
                 />
                 <div
                   className="h-2 w-2 animate-pulse bg-[#ffff00]"
-                  style={{ boxShadow: "0 0 8px #ffff00", animationDelay: "0.6s" }}
+                  style={{
+                    boxShadow: "0 0 8px #ffff00",
+                    animationDelay: "0.6s",
+                  }}
                 />
               </div>
             </div>

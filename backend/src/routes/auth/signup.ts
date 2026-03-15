@@ -5,7 +5,11 @@ import bcrypt from "bcrypt";
 import { generateAccessToken, generateRefreshToken } from "../../../lib/token";
 
 const signupSchema = z.object({
-  username: z.string().min(3).max(20).regex(/^[a-zA-Z0-9_-]+$/),
+  username: z
+    .string()
+    .min(3)
+    .max(20)
+    .regex(/^[a-zA-Z0-9_-]+$/),
   email: z.email(),
   password: z.string().min(8),
 });
@@ -43,7 +47,11 @@ export async function Signup(req: Request, res: Response) {
       res.status(500).json({ error: "Failed to create user" });
       return;
     }
-    const payload = {id: newUser.id, username: newUser.username, email: newUser.email};
+    const payload = {
+      id: newUser.id,
+      username: newUser.username,
+      email: newUser.email,
+    };
 
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
@@ -56,7 +64,7 @@ export async function Signup(req: Request, res: Response) {
       path: "/auth/refresh",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
-    res.json({accessToken});
+    res.json({ accessToken, user: payload });
     return;
   } catch (error) {
     console.log(error);
