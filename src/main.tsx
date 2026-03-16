@@ -3,11 +3,13 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.tsx";
 import { AuthProvider } from "./contexts/AuthContext";
+import ToastCnt from "./components/ui/ToastContainer.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <AuthProvider>
     <BrowserRouter>
       <App />
+      <ToastCnt />
     </BrowserRouter>
-  </AuthProvider>
+  </AuthProvider>,
 );

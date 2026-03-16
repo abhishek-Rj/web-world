@@ -2,6 +2,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { Router } from "express";
 import { listCharacters } from "./list";
 import { uploadCharacter } from "./upload";
+import { upload } from "../../middleware/multer";
 
 const client = new S3Client({
   region: process.env.AWS_REGION!,
@@ -14,6 +15,6 @@ const client = new S3Client({
 const s3Router = Router();
 
 s3Router.get("/list-characters", listCharacters);
-s3Router.post("/upload-character", uploadCharacter);
+s3Router.post("/upload-character", upload.single("image"), uploadCharacter);
 
 export { client, s3Router };

@@ -11,12 +11,12 @@ export default function CharacterUpload() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (user?.username !== process.env.VITE_ADMIN_NAME) {
+    if (user?.username !== import.meta.env.VITE_ADMIN_NAME) {
       navigate("/");
     }
   }, [user, navigate]);
 
-  if (user?.username !== process.env.VITE_ADMIN_NAME) {
+  if (user?.username !== import.meta.env.VITE_ADMIN_NAME) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-950 text-neutral-100">
         <ShieldAlert className="w-16 h-16 text-red-500 mb-4" />
