@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { playerDetailSchema } from "../../../src/utils/interface/schema";
+import { playerDetailSchema } from "../../interface/schema";
 import { randomCode } from "../random.code.generator";
 import { playerRoom, rooms } from "../../server";
 

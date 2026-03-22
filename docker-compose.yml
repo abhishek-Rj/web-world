@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: db
+    ports:
+      - "5431:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123123
+      - POSTGRES_DB=web-world
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: web-world-backend
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - DATABASE_URL=postgresql://postgres:123123@db:5432/web-world
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: .
+      dockerfile: DockerFile
+    container_name: web-world-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_BASE_URL: ${VITE_BASE_URL}
+      VITE_ADMIN_NAME: ${VITE_ADMIN_NAME}
+      VITE_AWS_ACCESS_KEY_ID: ${VITE_AWS_ACCESS_KEY_ID}
+      VITE_AWS_SECRET_ACCESS_KEY: ${VITE_AWS_SECRET_ACCESS_KEY}
+      VITE_S3_REGION: ${VITE_S3_REGION}
+      VITE_S3_BUCKET: ${VITE_S3_BUCKET}
+    command: npm run dev -- --host
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

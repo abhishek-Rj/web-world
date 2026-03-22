@@ -1,7 +1,7 @@
 import express from "express";
 import { joinRouter } from "./src/routes/network";
 import { Server } from "socket.io";
-import { gameRoom } from "../src/utils/interface/schema";
+import { gameRoom } from "./interface/schema";
 import cors, { CorsOptions } from "cors";
 import socket from "./src/websocket/socket";
 import { authRouter } from "./src/routes/auth";
@@ -13,7 +13,7 @@ const server = app.listen(4000, () => {
   console.log(`${new Date()} backend runnnin on port 4000`);
 });
 
-const whiteList = ["http://localhost:5173"];
+const whiteList = ["http://localhost:5173", "http://frontend:5173"];
 
 const corsConfig: CorsOptions = {
   origin: function (
