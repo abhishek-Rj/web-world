@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import express from "express";
 import { joinRouter } from "./src/routes/network";
 import { Server } from "socket.io";
@@ -5,12 +7,15 @@ import { gameRoom } from "./interface/schema";
 import cors, { CorsOptions } from "cors";
 import socket from "./src/websocket/socket";
 import { authRouter } from "./src/routes/auth";
+import { characterRouter } from "./src/routes/avatar";
 import cookieParser from "cookie-parser";
 import { s3Router } from "./src/aws/s3";
 
 const app = express();
-const server = app.listen(4000, () => {
-  console.log(`${new Date()} backend runnnin on port 4000`);
+
+const PORT = process.env.PORT;
+const server = app.listen(PORT, () => {
+  console.log(`${new Date()} backend runnnin on port ${PORT}`);
 });
 
 const whiteList = ["http://localhost:5173", "http://frontend:5173"];
@@ -53,5 +58,6 @@ export let rooms = new Map<string, gameRoom>();
 app.use("/auth", authRouter);
 app.use("/network", joinRouter);
 app.use("/s3", s3Router);
+app.use("/avatar", characterRouter);
 
 io.on("connection", socket);

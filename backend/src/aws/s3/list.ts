@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { client } from "./";
+import { client } from "./awsClient";
 import { ListObjectsV2Command } from "@aws-sdk/client-s3";
 
 export async function listCharacters(req: Request, res: Response) {
