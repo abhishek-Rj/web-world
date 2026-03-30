@@ -10,6 +10,7 @@ import { authRouter } from "./src/routes/auth";
 import { characterRouter } from "./src/routes/avatar";
 import cookieParser from "cookie-parser";
 import { s3Router } from "./src/aws/s3";
+import { userRouter } from "./src/routes/user";
 
 const app = express();
 
@@ -59,5 +60,6 @@ app.use("/auth", authRouter);
 app.use("/network", joinRouter);
 app.use("/s3", s3Router);
 app.use("/avatar", characterRouter);
+app.use("/user", userRouter);
 
 io.on("connection", socket);

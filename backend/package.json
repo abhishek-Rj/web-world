@@ -2,7 +2,7 @@
   "name": "backend",
   "scripts": {
     "build": "npx tsc",
-    "start": "ts-node server.ts"
+    "start": "nodemon server.ts"
   },
   "version": "1.0.0",
   "main": "index.js",

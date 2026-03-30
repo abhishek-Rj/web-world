@@ -11,11 +11,10 @@ export async function listCharacters(req: Request, res: Response) {
   try {
     const command = new ListObjectsV2Command(listParams);
     const data = await client.send(command);
-    res.json(
-      data.Contents?.map((item) => {
-        if (item.Key !== "characters/") return item.Key;
-      }),
+    const characters = data.CommonPrefixes?.map((prefix) =>
+      prefix.Prefix?.replace("characters/", "").replace("/", ""),
     );
+    res.status(200).json(characters);
   } catch (e) {
     console.log(e);
     res.status(500).json({ message: "Internal server error" });
