@@ -2,16 +2,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UploadCloud, FileType, CheckCircle, ShieldAlert } from "lucide-react";
-import { client } from "@/components/aws";
 import { toast } from "react-toastify";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
 
 export default function CharacterUpload() {
-  const { user } = useAuth();
+  const { user, accessToken } = useAuth();
   const navigate = useNavigate();
+  const [characterName, setCharacterName] = useState("");
   const [faceFile, setFaceFile] = useState<File | null>(null);
   const [characterFile, setCharacterFile] = useState<File | null>(null);
-  const [characterName, setCharacterName] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -72,40 +70,85 @@ export default function CharacterUpload() {
       setError("SELECT A CHARACTER FILE");
       return;
     }
-    const aws_prefixUrl = `https://${import.meta.env.VITE_S3_BUCKET!}.s3.${import.meta.env.VITE_S3_REGION!}.amazonaws.com/`;
-
-    const fileArray = [faceFile, characterFile];
 
     try {
-      await Promise.all(
-        fileArray.map(async (file, index) => {
-          const uploadParams = {
-            Bucket: import.meta.env.VITE_S3_BUCKET!,
-            Key: `characters/${characterName}/${index === 0 ? "face" : "character"}`,
-            Body: file,
-          };
-          const command = new PutObjectCommand(uploadParams);
-          await client.send(command);
-          return;
-        }),
-      );
-      const fileUploadUrl = aws_prefixUrl + `characters/${characterName}`;
-      const dbUpdate = await fetch(
+      const files = [
+        faceFile && { fileName: "face", type: faceFile.type, file: faceFile },
+        characterFile && {
+          fileName: "avatar",
+          type: characterFile.type,
+          file: characterFile,
+        },
+      ].filter(Boolean);
+
+      if (files.length != 2) {
+        setError("Please upload both face and character files");
+        return;
+      }
+
+      const getUrls = await fetch(
         `${import.meta.env.VITE_BASE_URL}/s3/upload-character`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
-            name: characterName,
-            url: fileUploadUrl,
+            characterName,
+            files: files.map((file: any) => ({
+              fileName: file.fileName,
+              type: file.type,
+            })),
           }),
         },
       );
-      if (!dbUpdate.ok) {
+
+      if (!getUrls.ok) {
+        throw new Error("Failed to get URLs");
+      }
+
+      const { urls } = await getUrls.json();
+
+      await Promise.all(
+        urls.map(async (url: any) => {
+          const file = files.find(
+            (file: any) => file.fileName === url.fileName,
+          );
+          const response = await fetch(url.url, {
+            method: "PUT",
+            headers: {
+              "Content-Type": file!.type,
+            },
+            body: file!.file,
+          });
+          if (!response.ok) {
+            throw new Error("Failed to upload character");
+          }
+        }),
+      );
+
+      const dbUpload = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/avatar/uploadCharacter`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            characterName,
+            key: `characters/${characterName}`,
+          }),
+        },
+      );
+
+      if (!dbUpload.ok) {
         throw new Error("Failed to upload character");
       }
+      setCharacterFile(null);
+      setFaceFile(null);
+      setCharacterName("");
       toast.success("Character uploaded successfully");
     } catch (e) {
       console.log(e);

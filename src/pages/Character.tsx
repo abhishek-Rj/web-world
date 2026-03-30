@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -10,39 +10,84 @@ interface CharacterOption {
   glow: string;
 }
 
-const characters: CharacterOption[] = [
-  {
-    id: "1",
-    name: "Nomad",
-    image: "/first_sprite.png",
-    color: "#00ffff",
-    glow: "#00ffff",
-  },
+const availableColors = [
+  { color: "#00ffff", glow: "#00ffff" },
+  { color: "#ff00ff", glow: "#ff00ff" },
+  { color: "#ffff00", glow: "#ffff00" },
+  { color: "#00ff00", glow: "#00ff00" },
 ];
 
 export default function Character() {
   const navigate = useNavigate();
-  const [selectedId, setSelectedId] = useState<string>(characters[0].id);
   const auth = useAuth();
+  const [characters, setCharacters] = useState<CharacterOption[]>([]);
+  const [selectedId, setSelectedId] = useState<string>("");
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchCharacters = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_BASE_URL}/avatar/getCharacters`,
+          {
+            headers: {
+              Authorization: `Bearer ${auth.accessToken}`,
+            },
+          },
+        );
+        const data = await res.json();
+        if (data && Array.isArray(data) && isMounted) {
+          const mapped = data.map((char: any, index: number) => ({
+            id: char.id,
+            name: char.name,
+            image: `${char.image}/face.png`,
+            color: availableColors[index % availableColors.length].color,
+            glow: availableColors[index % availableColors.length].glow,
+          }));
+          setCharacters(mapped);
+          if (mapped.length > 0) {
+            setSelectedId(mapped[0].id);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching characters:", err);
+      }
+    };
+
+    if (auth.accessToken) {
+      fetchCharacters();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [auth.accessToken]);
 
   const handleContinue = async () => {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/upload/character`, {
+    if (!selectedId) return;
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/user/update`, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${auth.accessToken}`,
+        Authorization: `Bearer ${auth.accessToken}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        AvatarId: selectedId,
+        characterId: selectedId,
       }),
     });
     const data = await res.json();
-    if (data.success) {
+    if (data) {
       navigate("/join");
     }
-  }
+  };
 
-  const selected = characters.find((c) => c.id === selectedId)!;
+  const selected = characters.find((c) => c.id === selectedId) || {
+    id: "dummy",
+    name: "LOADING...",
+    image: "/first_sprite.png",
+    color: "#332244",
+    glow: "#332244",
+  };
 
   return (
     <main className="font-departure relative min-h-screen overflow-hidden bg-[#0a0612] text-[#f7f0ff]">
@@ -187,9 +232,7 @@ export default function Character() {
                           boxShadow: isSelected
                             ? `0 0 15px ${char.glow}60, inset 0 0 15px ${char.glow}20`
                             : "none",
-                          background: isSelected
-                            ? `${char.glow}10`
-                            : "#0a0612",
+                          background: isSelected ? `${char.glow}10` : "#0a0612",
                         }}
                       >
                         <img
@@ -218,19 +261,21 @@ export default function Character() {
                   })}
 
                   {/* Locked slots */}
-                  {[...Array(3)].map((_, i) => (
-                    <div
-                      key={`locked-${i}`}
-                      className="flex h-[76px] w-[76px] items-center justify-center rounded-none border-2 border-[#332244] bg-[#0a0612]"
-                    >
-                      <span
-                        className="text-2xl text-[#332244]"
-                        style={{ textShadow: "0 0 4px #33224440" }}
+                  {[...Array(Math.max(0, 4 - characters.length))].map(
+                    (_, i) => (
+                      <div
+                        key={`locked-${i}`}
+                        className="flex h-[76px] w-[76px] items-center justify-center rounded-none border-2 border-[#332244] bg-[#0a0612]"
                       >
-                        🔒
-                      </span>
-                    </div>
-                  ))}
+                        <span
+                          className="text-2xl text-[#332244]"
+                          style={{ textShadow: "0 0 4px #33224440" }}
+                        >
+                          🔒
+                        </span>
+                      </div>
+                    ),
+                  )}
                 </div>
               </div>
 
@@ -240,8 +285,7 @@ export default function Character() {
                 onClick={handleContinue}
                 className="group relative w-full rounded-none border-2 border-[#00ffff] bg-[#0a1520] py-4 text-center font-black uppercase tracking-widest text-white transition-all duration-100 hover:bg-[#00ffff20]"
                 style={{
-                  boxShadow:
-                    "4px 4px 0 #00ffff80, inset 0 0 20px #00ffff10",
+                  boxShadow: "4px 4px 0 #00ffff80, inset 0 0 20px #00ffff10",
                 }}
               >
                 <div className="absolute -left-1 -top-1 h-3 w-3 bg-[#00ffff]" />
