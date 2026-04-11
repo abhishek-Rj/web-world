@@ -51,6 +51,7 @@ export async function Signup(req: Request, res: Response) {
       id: newUser.id,
       username: newUser.username,
       email: newUser.email,
+      characterId: newUser.characterId,
     };
 
     const accessToken = generateAccessToken(payload);

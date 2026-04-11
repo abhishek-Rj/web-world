@@ -1,5 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
@@ -11,7 +11,13 @@ export default function Signup() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { setUser, setAccessToken } = useAuth();
+  const { setUser, setAccessToken, accessToken } = useAuth();
+
+  useEffect(() => {
+    if (accessToken) {
+      navigate("/character");
+    }
+  }, [accessToken]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

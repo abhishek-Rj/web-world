@@ -24,6 +24,12 @@ export default function Character() {
   const [selectedId, setSelectedId] = useState<string>("");
 
   useEffect(() => {
+    if (auth.user?.characterId) {
+      navigate("/join");
+    }
+  }, [auth.user?.characterId]);
+
+  useEffect(() => {
     let isMounted = true;
     const fetchCharacters = async () => {
       try {

@@ -38,6 +38,7 @@ export async function Login(req: Request, res: Response): Promise<void> {
       id: existingUser.id,
       username: existingUser.username,
       email: existingUser.email,
+      characterId: existingUser.characterId,
     };
 
     const accessToken = generateAccessToken(payload);
