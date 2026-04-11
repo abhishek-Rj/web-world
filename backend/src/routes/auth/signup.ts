@@ -60,9 +60,10 @@ export async function Signup(req: Request, res: Response) {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       //TODO: for production use secure: true
-      secure: false,
-      sameSite: "strict",
-      path: "/auth/refresh",
+      secure: true,
+      sameSite: "none",
+      path: "/",
+      domain: ".abhishekraj.xyz",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
     res.json({ accessToken, user: payload });

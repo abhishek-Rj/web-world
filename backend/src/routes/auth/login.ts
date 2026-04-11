@@ -47,9 +47,10 @@ export async function Login(req: Request, res: Response): Promise<void> {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       //TODO: for production use secure: true
-      secure: false,
-      sameSite: "strict",
-      path: "/auth/refresh",
+      secure: true,
+      sameSite: "none",
+      path: "/",
+      domain: ".abhishekraj.xyz",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
     res.status(200).json({ accessToken, user: payload });

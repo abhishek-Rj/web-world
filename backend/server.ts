@@ -19,7 +19,12 @@ const server = app.listen(PORT, () => {
   console.log(`${new Date()} backend runnnin on port ${PORT}`);
 });
 
-const whiteList = ["http://localhost:5173", "http://frontend:5173"];
+const whiteList = [
+  "http://localhost:5173",
+  "http://frontend:5173",
+  "https://webworld.abhishekraj.xyz",
+  "https://web-world-rust.vercel.app",
+];
 
 const corsConfig: CorsOptions = {
   origin: function (
